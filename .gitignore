@@ -44,3 +44,7 @@ demo-source/
 tmp/
 temp/
 .cache/
+
+# QA local assets
+qa/pdfs/
+qa/screenshots/
