@@ -1,0 +1,46 @@
+# dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Vercel
+.vercel/
+
+# env
+.env
+.env.*
+!.env.example
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# generated QA/report artifacts
+qa/reports/
+playwright-report/
+test-results/
+coverage/
+
+# local demo/private source PDFs
+demo-source/
+
+# generated exports
+*.zip
+*-reading-crop.pdf
+*-academic-reading.pdf
+*-kindle-reading.pdf
+*-ipad-reading.pdf
+
+# temporary files
+tmp/
+temp/
+.cache/

@@ -1,0 +1,20 @@
+{
+  "original": {
+    "source": "/demo/demo-original.png",
+    "src": "/demo/demo-original.png?v=1780410274487"
+  },
+  "optimized": {
+    "academic": {
+      "source": "/demo/demo-optimized-academic.png",
+      "src": "/demo/demo-optimized-academic.png?v=1780410274629"
+    },
+    "kindle": {
+      "source": "/demo/demo-optimized-academic.png",
+      "src": "/demo/demo-optimized-academic.png?v=1780410274629"
+    },
+    "ipad": {
+      "source": "/demo/demo-optimized-academic.png",
+      "src": "/demo/demo-optimized-academic.png?v=1780410274629"
+    }
+  }
+}
