@@ -59,7 +59,7 @@ Latest validation report: `qa/real-paper-reports/pdf-engine-validation-report.md
 | Metric | Result |
 | --- | --- |
 | Executive verdict | **PIVOT TO SAFE MODE** |
-| Overall score | **0/100** |
+| Overall score | **40/100** |
 | Monetization readiness | **not ready to charge** |
 | Recommended action | **conservative safe mode + manual review workflow** |
 | PDFs tested | 12 |
