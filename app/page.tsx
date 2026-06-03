@@ -36,6 +36,7 @@ import { getColumnDetectionDebugConfig } from "@/lib/pdf/columnDetection";
 import { getOutputProfileForPreset } from "@/lib/pdf/readingProfiles";
 import { buildUserOptimizationReport } from "@/lib/product/optimizationReport";
 import { shouldShowDeveloperDiagnostics } from "@/lib/product/diagnosticsVisibility";
+import { incrementFreeUsage, isFreeUsageLimitReached, readFreeUsage, type FreeUsageState } from "@/lib/product/freeUsageLimit";
 import { exportBatchToZip, type BatchJob, type BatchSummary, type BatchZipResult } from "@/lib/product/batchExport";
 import { exportSinglePdf, type ExportProgressState } from "@/lib/product/exportWorkflow";
 import { getProductPlan } from "@/lib/product/productLimits";
@@ -62,6 +63,11 @@ declare global {
       getLatestPlan: () => { sourcePages: AcademicSourcePagePlan[]; outputProfileId: string; selectedPreset: string };
       getLatestDiagnostics: () => ColumnDetectionDebug[];
       getLatestSummary: () => Record<string, unknown>;
+      runBenchmark: (options: { presetId: ReadingPresetId; pageNumbers: number[] }) => Promise<{
+        summary: Record<string, unknown>;
+        diagnostics: ColumnDetectionDebug[];
+        plan: { sourcePages: AcademicSourcePagePlan[]; outputProfileId: string; selectedPreset: string };
+      }>;
       selectPreset: (presetId: ReadingPresetId) => void;
       setColumnMode: (enabled: boolean) => void;
     };
@@ -103,6 +109,7 @@ export default function Home() {
     DEFAULT_READING_PRESET_ID
   );
   const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const [freeUsage, setFreeUsage] = useState<FreeUsageState>({ periodKey: "", exportCount: 0 });
   const [columnModeEnabled, setColumnModeEnabled] = useState(
     () => getReadingPreset(DEFAULT_READING_PRESET_ID).defaultColumnMode
   );
@@ -111,14 +118,16 @@ export default function Home() {
   const cropRenderRequestRef = useRef(0);
 
   const isBusy = status === "validating" || status === "parsing" || status === "rendering";
+  const selectedPreset = getReadingPreset(selectedPresetId);
+  const productPlan = getProductPlan();
+  const planTier = productPlan.currentPlanTier;
+  const freeUsageLimitReached = planTier === "free" && isFreeUsageLimitReached(freeUsage, productPlan.freeMonthlyPdfLimit);
   const canExport =
     status === "ready" &&
     optimizedStatus === "ready" &&
     Boolean(selectedFileRef.current) &&
-    Boolean(pdfDocumentRef.current);
-  const selectedPreset = getReadingPreset(selectedPresetId);
-  const productPlan = getProductPlan();
-  const planTier = productPlan.currentPlanTier;
+    Boolean(pdfDocumentRef.current) &&
+    !freeUsageLimitReached;
   const readingSummary = summarizeRenderedPages(optimizedPages);
   const outputProfile = getOutputProfileForPreset(selectedPreset.id);
   const exportSummary = buildExportSummary(
@@ -222,6 +231,7 @@ export default function Home() {
 
   useEffect(() => {
     setShowDiagnostics(shouldShowDeveloperDiagnostics({ search: window.location.search }));
+    setFreeUsage(readFreeUsage(window.localStorage));
   }, []);
 
   useEffect(() => {
@@ -356,6 +366,40 @@ export default function Home() {
         presetCopyRendered: true,
         upgradeCTAVisible: optimizationReport.exportLimitApplied
       }),
+      runBenchmark: async ({ presetId, pageNumbers }) => {
+        const document = pdfDocumentRef.current;
+        if (!document) {
+          throw new Error("No PDF is loaded for benchmark analysis.");
+        }
+
+        const benchmarkPreset = getReadingPreset(presetId);
+        const rendered = await renderReadingPreviews(document, {
+          readingPreset: benchmarkPreset,
+          columnModeEnabled: benchmarkPreset.supportsColumnMode && benchmarkPreset.defaultColumnMode,
+          pageNumbers
+        });
+        const benchmarkOutputProfile = getOutputProfileForPreset(benchmarkPreset.id);
+        const benchmarkPlans = rendered.academicPlans ?? [];
+
+        return {
+          summary: {
+            status: "ready",
+            optimizedStatus: rendered.pages.length > 0 ? "ready" : "error",
+            selectedPreset: benchmarkPreset.id,
+            outputProfileId: benchmarkOutputProfile.id,
+            sourcePageCount: document.numPages,
+            planPageCount: benchmarkPlans.length,
+            failedPageNumbers: rendered.failedPageNumbers,
+            outputReadingPages: benchmarkPlans.reduce((sum, plan) => sum + plan.outputPages.length, 0)
+          },
+          diagnostics: rendered.diagnostics ?? [],
+          plan: {
+            sourcePages: benchmarkPlans,
+            outputProfileId: benchmarkOutputProfile.id,
+            selectedPreset: benchmarkPreset.id
+          }
+        };
+      },
       selectPreset: (presetId) => handleReadingPresetChange(presetId),
       setColumnMode: (enabled) => handleColumnModeChange(enabled)
     };
@@ -529,6 +573,9 @@ export default function Home() {
     const document = pdfDocumentRef.current;
 
     if (!file || !document || !canExport) {
+      if (freeUsageLimitReached) {
+        setExportError(`Free beta includes ${productPlan.freeMonthlyPdfLimit} PDF exports per month. Pro unlocks full-document export and Batch ZIP.`);
+      }
       return;
     }
 
@@ -554,6 +601,9 @@ export default function Home() {
       });
 
       downloadPdf(result.bytes, result.fileName);
+      if (planTier === "free") {
+        setFreeUsage(incrementFreeUsage(window.localStorage));
+      }
       setExportMessage(
         result.exportLimitApplied
           ? `Exported preview PDF: ${result.outputReadingPages} reading pages from the first ${result.sourcePagesIncluded} of ${result.totalSourcePages} source pages.`
@@ -750,6 +800,9 @@ export default function Home() {
               columnModeEnabled={selectedPreset.supportsColumnMode && columnModeEnabled}
               outputProfileLabel={outputProfile.label}
               optimizationReport={optimizationReport}
+              freeMonthlyPdfLimit={productPlan.freeMonthlyPdfLimit}
+              freeMonthlyPdfUsed={freeUsage.exportCount}
+              freeUsageLimitReached={freeUsageLimitReached}
               onExport={handleExport}
             />
             <ExportProgressPanel progress={exportProgress} />

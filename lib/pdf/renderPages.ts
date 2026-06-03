@@ -2,7 +2,8 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { PdfRenderResult, RenderedPage } from "@/types/pdf";
 
 const MAX_PREVIEW_PAGES = 3;
-const PREVIEW_SCALE = 0.9;
+const PREVIEW_SCALE = 1.15;
+const MAX_DEVICE_PIXEL_RATIO = 2;
 
 export async function renderPdfPages(document: PDFDocumentProxy): Promise<PdfRenderResult> {
   const pagesToRender = Math.min(document.numPages, MAX_PREVIEW_PAGES);
@@ -12,7 +13,8 @@ export async function renderPdfPages(document: PDFDocumentProxy): Promise<PdfRen
   for (let pageNumber = 1; pageNumber <= pagesToRender; pageNumber += 1) {
     try {
       const page = await document.getPage(pageNumber);
-      const viewport = page.getViewport({ scale: PREVIEW_SCALE });
+      const pixelRatio = getSafePixelRatio();
+      const viewport = page.getViewport({ scale: PREVIEW_SCALE * pixelRatio });
       const canvas = window.document.createElement("canvas");
       const context = canvas.getContext("2d");
 
@@ -30,8 +32,8 @@ export async function renderPdfPages(document: PDFDocumentProxy): Promise<PdfRen
 
       pages.push({
         pageNumber,
-        width: canvas.width,
-        height: canvas.height,
+        width: Math.round(canvas.width / pixelRatio),
+        height: Math.round(canvas.height / pixelRatio),
         dataUrl: canvas.toDataURL("image/png")
       });
 
@@ -45,4 +47,9 @@ export async function renderPdfPages(document: PDFDocumentProxy): Promise<PdfRen
     pages,
     failedPageNumbers
   };
+}
+
+function getSafePixelRatio() {
+  if (typeof window === "undefined") return 1;
+  return Math.min(window.devicePixelRatio || 1, MAX_DEVICE_PIXEL_RATIO);
 }

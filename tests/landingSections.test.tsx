@@ -115,11 +115,18 @@ describe("premium landing page sections", () => {
     const pricingHtml = renderToStaticMarkup(<PricingSection />);
 
     expect(heroHtml).toContain('href="#tool-workflow"');
+    expect(heroHtml).toContain("Join early access");
+    expect(heroHtml).toContain('href="#early-access"');
     expect(heroHtml).toContain('href="#reading-difference"');
     expect(pricingHtml).toContain("Try free");
     expect(pricingHtml).toContain('href="#tool-workflow"');
-    expect(pricingHtml).toContain("Join early access");
+    expect(pricingHtml).toContain("Early Access Pro");
+    expect(pricingHtml).toContain("Get Pro early access");
+    expect(pricingHtml).toContain("Full-document export");
+    expect(pricingHtml).toContain("Batch ZIP export");
+    expect(pricingHtml).toContain("Planned 19-29 EUR lifetime early access");
     expect(pricingHtml).toContain("Payments are not connected yet");
+    expect(pricingHtml).not.toContain("Payments coming soon");
   });
 
   it("renders a Pro operational tools section without upgrade sales copy", () => {

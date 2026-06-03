@@ -10,6 +10,7 @@ describe("product plan export limits", () => {
         currentPlanTier: "free",
         freeSourcePageLimit: 5,
         freeReadingPageLimit: 12,
+        freeMonthlyPdfLimit: 3,
         maxProFilesPerBatch: 20,
         proFeatureBadges: [],
         upgradeCTA: "Unlock full-document export"
@@ -32,6 +33,7 @@ describe("product plan export limits", () => {
         currentPlanTier: "free",
         freeSourcePageLimit: 5,
         freeReadingPageLimit: 12,
+        freeMonthlyPdfLimit: 3,
         maxProFilesPerBatch: 20,
         proFeatureBadges: [],
         upgradeCTA: "Unlock full-document export"
@@ -49,6 +51,7 @@ describe("product plan export limits", () => {
       currentPlanTier: "pro",
       freeSourcePageLimit: 5,
       freeReadingPageLimit: 12,
+      freeMonthlyPdfLimit: 3,
       maxProFilesPerBatch: 20,
       proFeatureBadges: [],
       upgradeCTA: "Unlock full-document export"

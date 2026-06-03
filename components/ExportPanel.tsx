@@ -17,6 +17,9 @@ type ExportPanelProps = {
   columnModeEnabled?: boolean;
   outputProfileLabel?: string;
   optimizationReport: UserOptimizationReport;
+  freeMonthlyPdfLimit?: number;
+  freeMonthlyPdfUsed?: number;
+  freeUsageLimitReached?: boolean;
   onExport: () => void;
 };
 
@@ -33,6 +36,9 @@ export function ExportPanel({
   columnModeEnabled = false,
   outputProfileLabel,
   optimizationReport,
+  freeMonthlyPdfLimit = 3,
+  freeMonthlyPdfUsed = 0,
+  freeUsageLimitReached = false,
   onExport
 }: ExportPanelProps) {
   const statusText = getStatusText(isLoaded, isSafeAutoReady, optimizationReport.exportReadiness);
@@ -96,9 +102,9 @@ export function ExportPanel({
           </p>
           {optimizationReport.planTier === "free" ? (
             <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold" data-qa="pro-hooks">
-              <span className="rounded-full border border-sage/20 bg-mist/65 px-2.5 py-1 text-ink/65">Free beta</span>
+              <span className="rounded-full border border-sage/20 bg-mist/65 px-2.5 py-1 text-ink/65">Free beta: {freeMonthlyPdfLimit} PDFs/month</span>
               <span className="rounded-full border border-sage/20 bg-white/80 px-2.5 py-1 text-ink/65">Full export is Pro</span>
-              <span className="rounded-full border border-sage/20 bg-white/80 px-2.5 py-1 text-ink/65">Batch export coming for Pro</span>
+              <span className="rounded-full border border-sage/20 bg-white/80 px-2.5 py-1 text-ink/65">Batch ZIP is Pro</span>
             </div>
           ) : (
             <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold" data-qa="pro-hooks">
@@ -115,9 +121,26 @@ export function ExportPanel({
           data-qa="single-pdf-export-cta"
           className="w-fit shrink-0 rounded-md bg-ink px-4 py-2 text-sm font-semibold text-paper transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/35"
         >
-          {isExporting ? "Preparing PDF..." : exportMessage ? "Download started" : ctaLabel}
+          {freeUsageLimitReached ? "Monthly limit reached" : isExporting ? "Preparing PDF..." : exportMessage ? "Download started" : ctaLabel}
         </button>
       </div>
+      {optimizationReport.planTier === "free" ? (
+        <div className="mt-3 rounded-md border border-sage/20 bg-mist/55 px-3 py-2 text-sm leading-6 text-ink/68" data-qa="free-usage-limit">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span>
+              Free beta: {freeMonthlyPdfLimit} PDFs/month. You have used {Math.min(freeMonthlyPdfUsed, freeMonthlyPdfLimit)} of {freeMonthlyPdfLimit} this month.
+            </span>
+            <a href="#early-access" className="text-sm font-semibold text-sage underline-offset-4 hover:underline">
+              Join early access
+            </a>
+          </div>
+          {freeUsageLimitReached ? (
+            <p className="mt-1 font-semibold text-ink">
+              Pro unlocks full-document export and Batch ZIP.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
       {optimizationReport.exportReadiness === "review-recommended" ? (
         <p className="mt-3 rounded-md border border-amber-300/50 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800">
           Review the flagged preview pages before exporting. Academic Paper may be safer for this PDF.

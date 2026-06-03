@@ -16,7 +16,7 @@ import { calculateDrawPlacement, calculateProfileDrawPlacement } from "./reading
 import { extractTextRowsFromContent } from "./textLineModel";
 
 const MAX_PREVIEW_PAGES = 3;
-const PREVIEW_SCALE = 0.9;
+const PREVIEW_SCALE = 1.05;
 const ANALYSIS_SCALE = 0.32;
 const MAX_DEVICE_PIXEL_RATIO = 2;
 
@@ -25,9 +25,12 @@ export async function renderReadingPreviews(
   options: {
     readingPreset: ReadingPresetConfig;
     columnModeEnabled: boolean;
+    pageNumbers?: number[];
   }
 ): Promise<PdfRenderResult> {
-  const pagesToRender = Math.min(document.numPages, MAX_PREVIEW_PAGES);
+  const pageNumbers = options.pageNumbers?.length
+    ? sanitizePageNumbers(options.pageNumbers, document.numPages)
+    : Array.from({ length: Math.min(document.numPages, MAX_PREVIEW_PAGES) }, (_, index) => index + 1);
   const pages: RenderedPage[] = [];
   const failedPageNumbers: number[] = [];
   const diagnostics: ColumnDetectionDebug[] = [];
@@ -36,7 +39,7 @@ export async function renderReadingPreviews(
   const renderScale = PREVIEW_SCALE * pixelRatio;
   const outputProfile = getOutputProfileForPreset(options.readingPreset.id);
 
-  for (let pageNumber = 1; pageNumber <= pagesToRender; pageNumber += 1) {
+  for (const pageNumber of pageNumbers) {
     try {
       const page = await document.getPage(pageNumber);
       const analysisViewport = page.getViewport({ scale: ANALYSIS_SCALE });
@@ -145,6 +148,14 @@ export async function renderReadingPreviews(
   }
 
   return { pages, failedPageNumbers, diagnostics, academicPlans };
+}
+
+function sanitizePageNumbers(pageNumbers: number[], totalPages: number) {
+  return Array.from(new Set(
+    pageNumbers
+      .map((pageNumber) => Math.floor(pageNumber))
+      .filter((pageNumber) => pageNumber >= 1 && pageNumber <= totalPages)
+  )).sort((a, b) => a - b);
 }
 
 async function getPageTextRows(page: PDFPageProxy) {

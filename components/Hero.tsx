@@ -21,6 +21,9 @@ export function Hero() {
           <a href="#tool-workflow" className="rounded-md bg-ink px-4 py-2 text-sm font-semibold text-paper transition hover:bg-ink/90">
             Optimize a PDF
           </a>
+          <a href="#early-access" className="rounded-md border border-sage/25 bg-white/75 px-4 py-2 text-sm font-semibold text-ink transition hover:border-sage">
+            Join early access
+          </a>
           <a href="#reading-difference" className="rounded-md border border-sage/25 bg-white/75 px-4 py-2 text-sm font-semibold text-ink transition hover:border-sage">
             See how it works
           </a>

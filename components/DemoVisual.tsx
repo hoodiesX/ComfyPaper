@@ -251,7 +251,7 @@ function getRealImageFrameClass(variant: string, tone: "contrast" | "focus" | "d
   }[tone];
 
   if (variant === "hero-original") return `${base} ${toneClass} aspect-[3/4] w-full max-w-[300px] p-1`;
-  if (variant === "hero-optimized") return `${base} ${toneClass} aspect-[4/5] w-full max-w-[320px] rounded-[1.35rem] border-[6px] border-ink/10 p-1.5 shadow-soft`;
+  if (variant === "hero-optimized") return `${base} ${toneClass} aspect-[4/5] w-full max-w-[330px] rounded-[1.35rem] border-[6px] border-ink/18 p-1.5 shadow-soft`;
   if (variant === "landing-original") return `${base} ${toneClass} aspect-[3/4] w-full max-w-[455px] p-2`;
   return `${base} ${toneClass} h-full w-full p-1.5`;
 }
@@ -265,7 +265,7 @@ function getFallbackFrameClass(variant: string, tone: "contrast" | "focus" | "de
   }[tone];
 
   if (variant === "hero-original") return `${base} ${toneClass} aspect-[3/4] w-full max-w-[300px] p-2`;
-  if (variant === "hero-optimized") return `${base} ${toneClass} aspect-[4/5] w-full max-w-[320px] rounded-[1.35rem] border-[6px] border-ink/10 p-2 shadow-soft`;
+  if (variant === "hero-optimized") return `${base} ${toneClass} aspect-[4/5] w-full max-w-[330px] rounded-[1.35rem] border-[6px] border-ink/18 p-2 shadow-soft`;
   if (variant === "landing-original") return `${base} ${toneClass} aspect-[3/4] w-full max-w-[455px] p-3`;
   return `${base} ${toneClass} h-full w-full p-2`;
 }

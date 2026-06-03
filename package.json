@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "qa:academic": "node scripts/qa-academic.mjs",
+    "qa:real-papers": "node scripts/qa-real-papers.mjs",
     "capture:demo": "node scripts/capture-demo-assets.mjs"
   },
   "dependencies": {

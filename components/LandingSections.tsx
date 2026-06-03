@@ -113,28 +113,24 @@ export function PricingSection({ planTier = "free" }: { planTier?: PlanTier }) {
   return (
     <section id="early-access" className="mx-auto max-w-6xl scroll-mt-6 px-5 pb-12 md:px-8" data-qa="pricing-section" data-plan-section="free-pricing">
       <h2 className="text-3xl font-semibold text-ink">Start free. Unlock full reading workflows when you need them.</h2>
-      <div className="mt-5 grid gap-4 md:grid-cols-3">
+      <p className="mt-2 max-w-3xl text-sm leading-6 text-ink/62">
+        Free beta is enough to try the workflow. Early Access Pro is for full papers, reading lists and batch ZIP export.
+      </p>
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
         <PlanCard
           title="Free Beta"
           badge="Try now"
           cta="Try free"
           href="#tool-workflow"
-          items={["Preview optimization", "Limited export: up to 5 source pages or 12 reading pages", "Basic presets", "Single PDF workflow"]}
+          items={["3 PDFs/month local beta limit", "Preview optimization", "Limited export: up to 5 source pages or 12 reading pages", "Basic presets", "Single PDF workflow"]}
         />
         <PlanCard
-          title="Pro"
-          badge="Pro preview"
-          cta="Join early access"
+          title="Early Access Pro"
+          badge="Coming soon"
+          cta="Get Pro early access"
           href="#early-access"
           emphasized
-          items={["Full-document export", "Batch ZIP export", "Upload multiple PDFs", "Device-specific presets", "Advanced preview/report", "Larger PDFs / higher limits", "Future saved presets"]}
-        />
-        <PlanCard
-          title="Early Access"
-          badge="Coming soon"
-          cta="Payments coming soon"
-          href="#early-access"
-          items={["Early Access Lifetime planned", "19-29 EUR planned", "Payments are not connected yet", "Pro will unlock full-document export and Batch ZIP"]}
+          items={["Full-document export", "Batch ZIP export", "Multiple PDFs", "Higher limits", "Device-specific presets", "Planned 19-29 EUR lifetime early access", "Payments are not connected yet"]}
         />
       </div>
     </section>

@@ -5,6 +5,7 @@ export type ProductPlanConfig = {
   currentPlanTier: PlanTier;
   freeSourcePageLimit: number;
   freeReadingPageLimit: number;
+  freeMonthlyPdfLimit: number;
   maxProFilesPerBatch: number;
   proFeatureBadges: string[];
   upgradeCTA: string;
@@ -14,6 +15,7 @@ export const PRODUCT_PLAN: ProductPlanConfig = {
   currentPlanTier: getConfiguredPlanTier(),
   freeSourcePageLimit: 5,
   freeReadingPageLimit: 12,
+  freeMonthlyPdfLimit: 3,
   maxProFilesPerBatch: 20,
   proFeatureBadges: ["Full-document export", "Batch processing", "ZIP export", "Saved presets", "Reading pack export later"],
   upgradeCTA: "Unlock full-document export"
