@@ -71,28 +71,18 @@ More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ## Benchmark Details
 
-Latest validation report: `qa/real-paper-reports/pdf-engine-validation-report.md` generated on 2026-06-02.
+The benchmark invalidated the initial product hypothesis: fully automatic reflow of arbitrary academic PDFs is not reliable enough for a paid product in the current version.
 
-| Metric | Result |
-| --- | --- |
-| Executive verdict | **PIVOT TO SAFE MODE** |
-| Product-readiness score under strict rubric | **0/100** |
-| Monetization readiness | **not ready to charge** |
-| Recommended action | **conservative safe mode + manual review workflow** |
-| PDFs tested | 12 |
-| Source pages | 208 |
-| Preset-pages analyzed | 342 |
+This is not presented as a production-ready SaaS. ComfyPaper is an engineering prototype and case study focused on browser-based PDF rendering, layout analysis, vector-preserving export, batch processing, and benchmark-driven validation.
 
-Preset results:
+The main technical conclusion is that a safer future direction would be:
 
-| Preset | Acceptable | Needs review | Failed |
-| --- | ---: | ---: | ---: |
-| Academic Paper | 0 | 2 | 10 |
-| Kindle / E-reader | 0 | 3 | 9 |
-| iPad / Tablet | 0 | 12 | 0 |
+- conservative layout optimization;
+- preserving complex pages by default;
+- manual review before export;
+- demoting Kindle output to experimental until the engine is more robust.
 
-The score is a product-readiness result, not a code-quality score. It indicates that the current automatic layout conversion strategy is not reliable enough for monetization on mixed real-world academic PDFs.
-
+Detailed benchmark results and failure analysis are documented in `docs/CASE_STUDY.md` / `docs/BENCHMARK.md`.
 ## Important Limitations
 
 - Automatic academic PDF reflow is hard because PDFs are fixed-layout documents, not semantic article data.
