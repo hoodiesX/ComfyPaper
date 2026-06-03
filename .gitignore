@@ -47,4 +47,10 @@ temp/
 
 # QA local assets
 qa/pdfs/
+qa/pdfs-local/
 qa/screenshots/
+qa/real-paper-reports/
+
+# local real-world benchmark PDFs
+qa/pdfs-local/
+qa/real-paper-reports/
