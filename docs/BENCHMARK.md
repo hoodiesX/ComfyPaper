@@ -1,6 +1,8 @@
 # Benchmark
 
-ComfyPaper includes a real-paper benchmark workflow so the PDF engine can be evaluated against academic PDFs instead of only polished demos.
+This benchmark is intentionally strict and product-readiness oriented. It does not score code quality, implementation effort, or architectural value. It measures whether the current automatic PDF layout conversion engine is reliable enough to be trusted on mixed real-world academic PDFs.
+
+The latest result is useful because it invalidated the automatic commercial optimizer hypothesis and pointed to a safer direction: conservative safe mode plus manual review.
 
 ## How To Run
 
@@ -24,6 +26,15 @@ qa/real-paper-reports/
 
 Both folders are gitignored.
 
+## What The Benchmark Measures
+
+- Whether presets can process sampled pages without severe automated risk signals.
+- Whether pages are split, preserved, or marked for review.
+- Whether output risks include clipping, broken full-width splits, orphan pages, low-fill pages, or unreadable Kindle output.
+- Whether the engine is ready to support a product claim around automatic academic PDF optimization.
+
+It does not claim that every flagged page is visually broken. Automated warnings are risk signals that identify pages needing manual inspection.
+
 ## What The Benchmark Does
 
 - Loads each PDF from `qa/pdfs-local/`.
@@ -41,7 +52,7 @@ Classifications:
 - **Needs review**: output may be usable, but warnings or preservation behavior require manual inspection.
 - **Failed**: severe automated risk signals indicate the preset should not be trusted for that file.
 
-Important: automated warnings are risk signals, not visual proof. The generated review checklists identify the first pages worth inspecting manually.
+The score is a product-readiness score for automatic conversion. It is not a judgment that the browser PDF pipeline, coordinate mapping, export path, or benchmark tooling are absent or low quality.
 
 ## Latest Result Summary
 
@@ -57,7 +68,7 @@ Source report: `qa/real-paper-reports/pdf-engine-validation-report.md`, generate
 | Decision | Result |
 | --- | --- |
 | Executive verdict | **PIVOT TO SAFE MODE** |
-| Overall score | **0/100** |
+| Product-readiness score under strict rubric | **0/100** |
 | Monetization readiness | **not ready to charge** |
 | Recommended next action | **conservative safe mode + manual review workflow** |
 
@@ -69,8 +80,16 @@ Preset breakdown:
 | Kindle / E-reader | 0 | 3 | 9 | 114 | 53 | 102 |
 | iPad / Tablet | 0 | 12 | 0 | 114 | 0 | 114 |
 
+## Useful Verdict
+
+- The project is **not ready to charge** as an automatic academic PDF optimizer.
+- The recommended direction is **conservative safe mode** with explicit manual review.
+- Kindle / E-reader should not be the main paid promise until fragmentation, low-fill output, and clipping risks are controlled.
+- Academic Paper mode needs safer fallback behavior and stronger review UX before it can be presented as reliable.
+- iPad / Tablet behavior was safer mainly because it preserved pages conservatively, not because the automatic optimizer solved mixed layouts.
+
 ## Engineering Interpretation
 
-The current engine should not be sold as a fully automatic academic PDF optimizer. Academic and Kindle presets produced too many severe risk signals, and Kindle output was especially fragile. The iPad preset avoided severe failures by preserving pages conservatively, which is safer but not the same as successful automatic optimization.
+The benchmark result shows a product-scope problem, not an absence of technical work. The implementation built a local-first browser PDF pipeline, but the strict readiness rubric showed that automatic conversion is unreliable on mixed academic documents.
 
-The benchmark supports a narrower future direction: conservative safe mode, explicit manual review, and stronger layout classification before any product claim.
+The appropriate next step is to narrow the promise: make safe improvements when confidence is high, preserve complex pages, and ask users to review high-risk output.

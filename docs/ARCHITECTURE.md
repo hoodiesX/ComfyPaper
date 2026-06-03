@@ -1,6 +1,8 @@
 # Architecture
 
-ComfyPaper is a local-first browser prototype built with Next.js, React, TypeScript, PDF.js, pdf-lib, and JSZip. The architecture separates PDF rendering and analysis from PDF export so previews can be rasterized quickly while final output can preserve vector content where possible.
+ComfyPaper is a local-first browser prototype built with Next.js, React, TypeScript, PDF.js, pdf-lib, and JSZip. The architecture focuses on document-processing constraints: browser memory, PDF coordinate systems, raster preview versus vector export, and conservative handling of risky pages.
+
+The project is intentionally client-side. PDFs are loaded, rendered, analyzed, previewed, and exported in the browser without a required upload server.
 
 ## Data Flow
 
@@ -45,7 +47,7 @@ flowchart TD
 4. Pixel data is used for ink and margin analysis.
 5. PDF.js text content is grouped into text rows.
 6. The column detector combines ink, text rows, preset rules, and safety checks.
-7. The academic planner creates output-page plans or preserves risky pages.
+7. The academic planner creates output-page plans, preserve decisions, and risk signals.
 8. The preview renderer crops source canvas regions into proposed reading pages.
 
 ## Export Pipeline
@@ -57,6 +59,14 @@ The export path uses pdf-lib rather than exporting preview images:
 - Preserved pages are copied through when the planner cannot safely transform them.
 
 This design keeps output closer to the original PDF content, but it makes coordinate mapping and crop validation critical.
+
+## Design Tradeoffs
+
+- **Local-first processing:** avoids server upload requirements, but the browser must handle PDF parsing, canvas rendering, and export memory limits.
+- **Raster preview, vector export:** previews are practical with canvas, while pdf-lib export preserves source PDF content where possible.
+- **Normalized coordinates:** shared crop fractions allow analysis, preview, and export to use the same layout plan across different coordinate systems.
+- **Conservative preservation:** risky pages can be copied through rather than transformed aggressively, which is important for formulas, figures, tables, and mixed layouts.
+- **Preset-specific output:** Kindle, iPad, and academic-paper profiles require different page dimensions and safety thresholds.
 
 ## Batch Flow
 

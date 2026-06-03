@@ -1,40 +1,57 @@
 # ComfyPaper
 
-Experimental local-first academic PDF reading optimizer for making dense research papers easier to read on e-readers and tablets.
+Experimental local-first academic PDF optimizer and PDF layout-analysis prototype.
 
-## Status
+**Status: Experimental engineering prototype — not production-ready.**
 
-**Experimental prototype / engineering case study. Not production-ready.**
+ComfyPaper explores whether dense academic PDFs can be made easier to read on e-readers and tablets using only browser-local processing. The project combines PDF.js rendering, layout analysis, vector-preserving pdf-lib export, device-oriented presets, batch ZIP export, and real-world benchmark validation.
 
-ComfyPaper is not a successful SaaS, not a production PDF optimizer, and not a reliable universal Kindle or iPad converter. It is best understood as an experimental local-first academic PDF reading optimizer and PDF layout analysis prototype.
+Benchmark outcome: **initial automatic-reflow hypothesis invalidated.** The current engine is technically interesting, but the validation results show it is not robust enough to sell as a fully automatic PDF optimizer.
 
-The project value is technical: it explores browser-based PDF rendering, PDF.js analysis, pdf-lib export, coordinate mapping, crop and column layout heuristics, batch ZIP export, and benchmark-driven validation on real academic PDFs.
+## Why This Project Is Technically Interesting
+
+- Client-side PDF rendering and preview generation.
+- PDF.js loading, worker setup, canvas rendering, and text extraction.
+- pdf-lib export that preserves vector PDF content where possible.
+- Normalized coordinate mapping across canvas pixels, PDF page points, crop fractions, and output page dimensions.
+- Column and layout analysis for academic paper pages.
+- Local-first processing with no required upload server.
+- Batch ZIP export for multiple PDFs.
+- Benchmark automation against real academic PDFs.
+- Failure-mode analysis for clipping, mixed layouts, low-fill pages, and fragile Kindle output.
 
 ## What It Does
 
-ComfyPaper processes PDFs locally in the browser. It validates an uploaded PDF, renders preview pages with PDF.js, attempts margin cleanup and column-aware reading layouts, shows a before/after preview, exports a vector-preserving PDF with pdf-lib, and can package multiple outputs into a ZIP. When a page appears risky, the engine attempts to preserve it or flag it for review instead of silently pretending the conversion is safe.
+ComfyPaper validates an uploaded PDF, renders source previews in the browser, attempts margin cleanup and column-aware reading layouts, shows a before/after preview, exports transformed PDFs with pdf-lib, and can package multiple outputs into a ZIP. When a page appears risky, the planner can preserve it or flag it for review instead of silently treating every conversion as safe.
+
+This is not a production PDF optimizer, not a generic PDF editor, and not a reliable universal Kindle/iPad converter.
 
 ## Key Features
 
-- Local-first PDF processing with no required upload server.
+- Local-first PDF processing.
 - Academic Paper mode for dense research papers and technical documents.
-- Kindle / E-reader and iPad / Tablet reading presets.
+- Kindle / E-reader and iPad / Tablet presets.
 - Safe crop and column reading preview.
-- Vector-preserving PDF export using CropBox or derived page layouts.
+- Vector-preserving PDF export using CropBox or derived source-region layouts.
 - Batch ZIP export workflow.
 - User-facing optimization report with optimized, preserved, and review pages.
-- Real-paper benchmark workflow for measuring failures instead of relying on demos.
+- Real-paper benchmark workflow with generated reports and manual review checklists.
 
-## Technical Highlights
+## Validation Outcome
 
-- PDF.js rendering pipeline for browser previews and canvas-based page analysis.
-- pdf-lib export pipeline for preserving vector text where possible.
-- Normalized coordinate mapping between canvas pixels, PDF coordinates, crop fractions, and output pages.
-- Text and ink-based layout analysis for margins, columns, and reading regions.
-- Column detection, page classification, risk scoring, and conservative preserve behavior.
-- Client-side performance constraints around PDF workers, canvas memory, and preview limits.
-- Playwright/QA automation hooks for running real-paper benchmark checks.
-- Benchmark-driven validation with generated reports and manual review checklists.
+The benchmark showed that real academic PDFs are harder than the initial product hypothesis assumed. Papers often mix two-column body text with full-width titles, formulas, figures, tables, references, headers, footers, and irregular spacing. Those cases make automatic reflow fragile.
+
+The result is an engineering decision: ComfyPaper should not be positioned as an automatic commercial PDF optimizer in its current form. The more credible direction is conservative safe mode plus manual review, where the tool makes simple safe improvements, preserves complex pages, and surfaces pages that need inspection.
+
+Detailed results are documented in [docs/BENCHMARK.md](docs/BENCHMARK.md).
+
+## What This Demonstrates
+
+- Ability to build non-trivial browser-based document tooling.
+- Ability to design a PDF analysis and export pipeline across multiple coordinate systems.
+- Ability to benchmark against real inputs instead of relying on polished demos.
+- Ability to identify product and engineering limitations honestly.
+- Ability to make technical tradeoff decisions from measured evidence.
 
 ## Architecture Overview
 
@@ -52,14 +69,14 @@ Upload PDF
 
 More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
-## Benchmark Summary
+## Benchmark Details
 
 Latest validation report: `qa/real-paper-reports/pdf-engine-validation-report.md` generated on 2026-06-02.
 
 | Metric | Result |
 | --- | --- |
 | Executive verdict | **PIVOT TO SAFE MODE** |
-| Overall score | **40/100** |
+| Product-readiness score under strict rubric | **0/100** |
 | Monetization readiness | **not ready to charge** |
 | Recommended action | **conservative safe mode + manual review workflow** |
 | PDFs tested | 12 |
@@ -74,21 +91,18 @@ Preset results:
 | Kindle / E-reader | 0 | 3 | 9 |
 | iPad / Tablet | 0 | 12 | 0 |
 
-This is a negative product result but a useful engineering result. The project includes measurement and failure analysis instead of hiding weak cases behind a polished demo. The benchmark shows that the current engine is not ready to be sold as an automatic universal optimizer.
-
-Benchmark details: [docs/BENCHMARK.md](docs/BENCHMARK.md)
+The score is a product-readiness result, not a code-quality score. It indicates that the current automatic layout conversion strategy is not reliable enough for monetization on mixed real-world academic PDFs.
 
 ## Important Limitations
 
-- Automatic academic PDF reflow is hard. PDFs are fixed-layout documents, not semantic article data.
-- Mixed layouts with formulas, figures, tables, full-width sections, headers, and footers can break the assumptions behind margin and column detection.
+- Automatic academic PDF reflow is hard because PDFs are fixed-layout documents, not semantic article data.
+- Mixed layouts with formulas, figures, tables, full-width sections, headers, and footers can break margin and column assumptions.
 - Kindle / E-reader mode is especially fragile because narrow output pages amplify fragmentation, low-fill pages, and clipping risk.
-- The current benchmark result shows the engine is not reliable enough to monetize as a fully automatic optimizer.
-- The project should be evaluated as a technical prototype and engineering case study, not as a finished product.
+- The current engine should be evaluated as a technical prototype and case study, not as a finished product.
 
 ## Case Study
 
-The full technical case study covers the product hypothesis, browser PDF pipeline, coordinate mapping problems, benchmark methodology, failure analysis, and product decision.
+The full technical case study covers the product hypothesis, browser PDF pipeline, coordinate mapping problems, benchmark methodology, failure analysis, and resulting product decision.
 
 Read it here: [docs/CASE_STUDY.md](docs/CASE_STUDY.md)
 
@@ -119,19 +133,10 @@ Local benchmark PDFs and generated real-paper reports are gitignored because the
 - Generated screenshots, ZIPs, and exported PDFs are gitignored.
 - Source code and tests remain the portable part of the repository.
 
-## What I Learned
-
-- PDF layout is much harder than it looks because visual structure and reading order are not reliably encoded.
-- Product quality requires benchmarks on real documents, not just a few successful demos.
-- Safe fallback and page preservation matter more than aggressive transformation when clipping risk is high.
-- Honest validation can invalidate a monetization idea, and that is a useful engineering outcome.
-- A future version should prioritize conservative safe mode and manual review before promising automatic conversion.
-
-## Future Work
+## Future Direction
 
 - Conservative safe mode as the default behavior.
-- Manual review UI for pages with high layout risk.
-- Better mixed-layout detection for title/body transitions and section changes.
-- Stronger formula, figure, table, and full-width region detection.
-- Larger benchmark suite with clearer acceptance criteria.
-- Demote Kindle / E-reader mode to experimental until it is robust.
+- Manual review mode for pages with high layout risk.
+- Stronger mixed-layout detection for title/body transitions, formulas, figures, tables, and full-width regions.
+- Demote Kindle / E-reader mode to experimental until fragmentation and clipping risks are controlled.
+- Larger benchmark dataset with clearer acceptance thresholds.
